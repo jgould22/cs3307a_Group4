@@ -1,30 +1,12 @@
-#include <stdio.h>
-#include <stdlib.h> 
-#include <iostream>
-#include <iomanip>
-#include <string>
-#include <fstream>
-#include <time.h>
-#include <math.h>
-#include <sstream>
-#include <vector>
+#include "User.h"
 
-using namespace std;
 
-class User
-{	
-    //Class attributes
-public:
-	virtual ~User() { }; 
-    string userID;
-    string userName;
-	string userType;
 
     //Constructors
-    User() {};
+    User::User() {};
 	
-public:
-	int safercinInt()
+
+	int User::safercinInt()
 {
     int choice;
     
@@ -47,7 +29,7 @@ public:
 }
 
 	//Function to ensure safe float input 
-	float safercinFloat()
+	float User::safercinFloat()
 	{
 		
 		float choice;
@@ -69,4 +51,38 @@ public:
 
 		return choice;
 	}
-};
+
+	User* getUser(vector<User*> accounts, string id)
+	{
+		for (int i = 0; i< (int)accounts.size(); ++i)
+		{
+			if (accounts[i]->userID == id)
+			{
+				return accounts[i];
+			}
+		}
+		return NULL;
+	}
+	string generateID(vector<User*> accounts)
+	{
+		int xRan;
+		ostringstream oss;
+		srand(time(NULL));
+
+		bool inUse = false;
+		do
+		{
+			xRan = rand() % 10000 + 1000; // Randomizing the number between 1000-10000
+			oss << xRan;
+			for (vector<User*>::iterator it = accounts.begin(); it != accounts.end(); ++it)
+			{
+				if ((*it)->userID == oss.str())
+				{
+					inUse = true;
+					break;
+				}
+			}
+		} while (inUse);
+
+		return oss.str();
+	}

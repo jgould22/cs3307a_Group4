@@ -1,23 +1,20 @@
-#include "Customer.cpp"
-#include "Util.h"
+#include "Manager.h"
 
-class Manager: public User
-{
-public:
-	Manager(string name, string ID)
+
+Manager::Manager(string name, string ID)
 	{
 		userName = name;
 		userID = ID;
 		userType = "Man";
 	}
-public:
+
 	
-	void printAccount()
+void Manager::printAccount()
 	{
 		cout << "\nName: " << userName << setw(31 - userName.length()) << "UserID: " << userID << endl;
 	}
 
-	void createUser(vector<User> *accounts)
+void Manager::createUser(vector<User*> *accounts)
 	{
 		cout << "\nNew User Menu" << endl;
 		char userType;
@@ -62,7 +59,7 @@ public:
 			
 			if (userName.length() <= 5)
 			{
-				cout << "name-" << userName << endl;
+				//cout << "" << userName << endl;
 				cout << "User's name is too short, must exceed 5 characters" << endl;
 			}
 			else
@@ -71,17 +68,17 @@ public:
 			}
 		}
 
-		string userID = generateID(accounts);
+		string userID = generateID(*accounts);
 		if (userType == 'c')
-			accounts->push_back(Customer(userID, userName));
+			accounts->push_back(new Customer(userName, userID));
 		else if (userType =='m')
-			accounts->push_back(Manager(userID, userName));
+			accounts->push_back(new Manager(userName, userID));
 			
 		cout << "New user created!" << endl << "The new user's userID is: " << userID << endl;
 	}
 
 	//Opens the menu that allows a manager to alter or make accounts
-	void managerEdit(vector<User> *accounts)
+void Manager::managerEdit(vector<User*> *accounts)
 	{
 		//first the manager must choose which account to edit
 		string userID;
@@ -89,7 +86,7 @@ public:
 			 << "Account: ";
 		cin >> userID;
 
-		User* chosenUser = getUser(accounts, userID);
+		Customer* chosenUser =(Customer*) getUser(*accounts, userID);
 
 		//if there is a user with this userID
 		if (chosenUser != NULL)
@@ -127,14 +124,16 @@ public:
 				}
 				else if (choice == "2" && chosenUser->chequing != 0)
 				{
-					
-					cout << "Unable to close chequing, money still deposited" << endl;
+					if (chosenUser->chequing > 0)
+						cout << "Unable to close chequing, money still deposited" << endl;
+					else
+						cout << "That account is not open" << endl;
 					
 				}
 				//delete the user and return manager to the main menu
 				else if (choice == "3")
 				{
-					closeAccount(account, chosenUser);
+					closeAccount(accounts, chosenUser);
 				//	wrap(closeAccount,accounts,chosenUser,tracefile, "closeAccount");
 					choice = "0";
 				}
@@ -149,23 +148,25 @@ public:
 
 	}
 
-	void closeAccount(vector<User> *accounts, User* thisUser)
+void Manager::closeAccount(vector<User*> *accounts, User* thisUser)
 	{
-		if (thisUser->savings != 0)
-			cout << thisUser->name << " still has money in savings account." << endl;
-		else if (thisUser->savings == 0)
+		//This will crash if you try to close a manager or maintenance...
+		Customer* toClose = (Customer*)thisUser;
+		if (toClose->savings != 0)
+			cout << toClose->userName << " still has money in savings account." << endl;
+		else if (toClose->savings == 0)
 		{
-			if (thisUser->chequing > 0)
+			if (toClose->chequing > 0)
 			{
-				cout << thisUser->name << " still has money in chequing account." << endl;
+				cout << toClose->userName << " still has money in chequing account." << endl;
 			}
 			else
 			{
-				for (vector<User>::iterator it = accounts->begin(); it != accounts->end(); ++it)
+				for (vector<User*>::iterator it = accounts->begin(); it != accounts->end(); ++it)
 				{
-					if (&*(it) == thisUser) 
+					if ((*it) == thisUser) 
 					{
-						cout << "*UserID: " << thisUser->id << "\t Name: " << thisUser->name << "*" << endl;
+						cout << "*UserID: " << toClose->userID << "\t Name: " << toClose->userName << "*" << endl;
 						cout << "The selected profile has been deleted from the database" << endl;
 						accounts->erase(it);
 						break;
@@ -176,21 +177,21 @@ public:
 	}
 
 	//will show the manager how much money is held by the bank
-	void managerTotals(vector<User> *accounts)
+void Manager::managerTotals(vector<User*> accounts)
 	{
 		double totalSavings = 0;
 		double totalChequing = 0;
 		int customerCount = 0;
 		
-		for (vector<User>::iterator it = accounts->begin(); it != accounts->end(); ++it)
+		for (vector<User*>::iterator it = accounts.begin(); it != accounts.end(); ++it)
 		{
-			if ((*it).userType == "Cust")
+			if ((*it)->userType == "Cust")
 			{
 				customerCount++;
-				totalSavings += (*it).savings;
+				totalSavings += ((Customer*)(*it))->savings;
 				
-				if ((*it).chequing != -1)
-					totalChequing += (*it).chequing;
+				if (((Customer*)(*it))->chequing != -1)
+					totalChequing += ((Customer*)(*it))->chequing;
 			}
 		}
 		
@@ -199,7 +200,7 @@ public:
 		cout << "There is a total of $" << totalChequing << " in chequing accounts" << endl;
 	}
 
-	void managerMainMenu(vector<User*> accounts)
+void Manager::managerMainMenu(vector<User*> *accounts)
 	{
 		string option;
 		cout << "\nHello " << userName << "," << endl;
@@ -218,7 +219,7 @@ public:
 			
 			if (option == "1")
 			{
-				createUser(*accounts);
+				createUser(accounts);
 			}
 				//wrap(createUser,accounts,tracefile, "createUser");
 			else if (option == "2")
@@ -229,12 +230,12 @@ public:
 			}
 			else if (option == "3")
 			{
-				managerView(accounts);
+				managerView(*accounts);
 			}
 //				wrap(managerView,accounts,tracefile,"managerView");
 			else if (option == "4")
 			{
-				managerTotals(accounts);
+				managerTotals(*accounts);
 				
 			}
 			else
@@ -245,13 +246,14 @@ public:
 		}
 	}
 	
-	void printAllAccounts(vector<User*> accounts)
+void Manager::printAllAccounts(vector<User*> accounts)
 	{
-		if (!(accounts->empty()))
+		if (!(accounts.empty()))
 		{
-			for (vector<User>::iterator it = accounts->begin(); it != accounts->end(); ++it)
+			for (vector<User*>::iterator it = accounts.begin(); it != accounts.end(); ++it)
 			{
-				(*it).printAccount();
+				if ((*it)->userType == "Cust")
+					((Customer*)(*it))->printAccount();
 			}
 		}
 		else
@@ -261,7 +263,7 @@ public:
 	}
 	
 	//menu for viewing a User's (or all) accounts
-	void managerView(vector<User*> accounts)
+void Manager::managerView(vector<User*> accounts)
 	{
 		string request;
 		while (request != "0")
@@ -280,9 +282,10 @@ public:
 			}
 			else if (request != "0")
 			{				
-				if (getUser(&accounts, request) != NULL)
+				if (getUser(accounts, request) != NULL)
 				{
-					printAccount(chosenUser);
+					User *chosenUser = getUser(accounts, request);
+					((Customer*)chosenUser)->printAccount();
 				}
 				else
 					cout << request << " is not a valid ID" << endl;
@@ -296,6 +299,5 @@ public:
 	}
 
 
-};
 
 

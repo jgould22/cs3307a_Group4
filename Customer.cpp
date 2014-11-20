@@ -1,13 +1,6 @@
-#include "User.cpp"
+#include "Customer.h"
 
-class Customer: public User
-{
-	public:
-	double savings;
-	double chequing;
-	
-	public:
-	Customer(string name, string ID)
+	Customer::Customer(string name, string ID)
 	{
 		userName = name;
 		userID = ID;
@@ -16,7 +9,7 @@ class Customer: public User
 		chequing = -1;
 	}
 	
-	void printAccount()
+	void Customer::printAccount()
 	{
 		ostringstream oss;
 
@@ -43,7 +36,7 @@ class Customer: public User
 		cout << "Savings: " << sav << setw(30 - sav.length()) << "Chequing: " << cheq << endl;  
 	}
 	
-	bool customerDeposit(int choice, float depositamount)
+	bool Customer::customerDeposit(int choice, float depositamount)
 	{
     depositamount = floorf(depositamount * 100) / 100;
     if (depositamount <= 0)
@@ -70,7 +63,7 @@ class Customer: public User
 
 	//runs the menu for withdrawal options
 	//implements the WARNING message if chequing accounts do not meet the $1000 threshold
-	bool customerWithdrawal(int choice, float withdrawamount)
+	bool Customer::customerWithdrawal(int choice, float withdrawamount)
 	{
 		withdrawamount = floorf(withdrawamount * 100) / 100;
 		
@@ -131,7 +124,7 @@ class Customer: public User
 	}
 
 	//runs the menu for transfer options
-	bool customerTransfer(int type, float amount)
+	bool Customer::customerTransfer(int type, float amount)
 	{
 		if (amount <= 0)//check validity
 		{
@@ -141,10 +134,12 @@ class Customer: public User
 		
 		if (customerWithdrawal(type, amount))
 		{
-			if (customerDeposit(3-type, amount))
-			{ 
+			if (customerDeposit(3 - type, amount))
+			{
 				return true;
 			}
+			else
+				return false;//added this else to it always returns a value, not 100% sure about it though. Deposit shouldn't fail?
 		}
 		else
 			return false;
@@ -152,7 +147,7 @@ class Customer: public User
 
 
 	//main menu displayed only to customers ('c')
-	void customerMainMenu()
+	void Customer::customerMainMenu()
 	{
 		cout << "\nHello " << userName << "," << endl;
 
@@ -181,7 +176,7 @@ class Customer: public User
 				float dAmount;
 				cout << "\nWould you like to deposit to:" << endl << "1. Savings\n2. Chequing\nChoice: ";
 				choice = safercinInt();
-				cout << "\nHow much would you like to deposit?\n$: ";
+				cout << "\nHow much would you like to deposit?\n ";
 				dAmount = safercinFloat();
 				customerDeposit(choice, dAmount);
 			//	wrap(customerDeposit,choice, dAmount, currentUser,tracefile, "customerDeposit");
@@ -194,7 +189,7 @@ class Customer: public User
 				float wAmount;
 				cout << "\nWould you like to withdraw from:" << endl << "1. Savings\n2. Chequing\nChoice: ";
 				choice = safercinInt();
-				cout << "\nHow much would you like to withdraw?\n$: ";
+				cout << "\nHow much would you like to withdraw?\n ";
 				wAmount = safercinFloat();
 				//wrap(customerWithdrawal,choice, wAmount, currentUser, tracefile, "customerWithdrawal");
 				customerWithdrawal(choice, wAmount);
@@ -231,4 +226,3 @@ class Customer: public User
 		
 	}
 
-};

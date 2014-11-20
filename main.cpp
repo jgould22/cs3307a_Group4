@@ -1,15 +1,14 @@
-#include "Manager.cpp"
+#include "Manager.h"
 
-void saveToDataBase(vector<User> *accounts);
-vector<User> openDataBase();
-void createManager(vector<User> *accounts);
+void saveToDataBase(vector<User*> accounts);
+vector<User*> openDataBase();
+void createManager(vector<User*> *accounts);
 
 int main(int argc, char **argv)
 {
 	//Declare variables required to hold program information
-	bool flag;
-	vector<User> vectorUser = openDataBase(flag);
-    vector<User> *accounts = &vectorUser;
+	vector<User*> vectorUser = openDataBase();
+    //vector<User*> *accounts = &vectorUser;
 	
 	time_t timer(0);
     string userID;
@@ -24,22 +23,22 @@ int main(int argc, char **argv)
 		 //closes program
         if (userID == "0")
         {
-            saveToDataBase(accounts, flag);
+            saveToDataBase(vectorUser);
             return 0;
         }
 		else
         {
             //determine which menu to open
-			User* currentUser = getUser(accounts, userID);
+			User* currentUser = getUser(vectorUser, userID);
 			if (currentUser != NULL)
 			{
 				if (currentUser->userType == "Cust")
 				{
-					(dynamic_cast<Customer*>(currentUser))->customerMainMenu();
+					((Customer*)(currentUser))->customerMainMenu();
 				}
 				else if (currentUser->userType == "Man")
 				{
-					(dynamic_cast<Manager*>(currentUser))->managerMainMenu();
+					((Manager*)(currentUser))->managerMainMenu(&vectorUser);
 				}
 				else
 				{
@@ -57,20 +56,20 @@ int main(int argc, char **argv)
 
 //SaveToDataBase Function
 //Saves the User accounts to a text file for program to load at later start up 
-void saveToDataBase(vector<User> *accounts)
+void saveToDataBase(vector<User*> accounts)
 {
     ofstream myFile;
     myFile.open("userDB.txt");
 	
-    for (vector<User>::iterator it = accounts->begin(); it != accounts->end(); ++it)
+    for (vector<User*>::iterator it = accounts.begin(); it != accounts.end(); ++it)
     {
-		if ((*it).userType == "Cust")
+		if ((*it)->userType == "Cust")
 		{
-			myFile << (*it).userName << "\n" << (*it).id << "\n" << (*it).userType << "\n" << (*it).savings << "\n" << (*it).chequing << "\n";
+			myFile << (*it)->userName << "\n" << (*it)->userID << "\n" << (*it)->userType << "\n" << ((Customer*)(*it))->savings << "\n" << ((Customer*)(*it))->chequing << "\n";
 		}
-		else if ((*it).userType == "Man")
+		else if ((*it)->userType == "Man")
 		{
-			myFile << (*it).userName << "\n" << (*it).userID << "\n" << (*it).userType << "\n";
+			myFile << (*it)->userName << "\n" << (*it)->userID << "\n" << (*it)->userType << "\n";
 		}
 		else
 		{
@@ -82,10 +81,10 @@ void saveToDataBase(vector<User> *accounts)
 
 //OpenDataBase Function
 //Opens and loads saved users/accounts during program startup
-vector<User> openDataBase()
+vector<User*> openDataBase()
 {
 	ifstream myfile("userDB.txt");
-    vector<User> vectorUser;
+    vector<User*> vectorUser;
     
     if (myfile)
     {
@@ -109,16 +108,16 @@ vector<User> openDataBase()
 					myfile	>> savings
 							>> chequing;
 							
-					Customer user (name,userID);
-					user.savings = savings;
-					user.chequing = chequing;
+					Customer *user = new Customer(name,userID);
+					user->savings = savings;
+					user->chequing = chequing;
 					vectorUser.push_back(user);
 					
 					getline(myfile, line);
 				}
 				else if (userType == "Man")
 				{
-					Manager user (name,userID);
+					Manager *user = new Manager(name,userID);
 					vectorUser.push_back(user);
 				}
 			}
@@ -149,7 +148,7 @@ vector<User> openDataBase()
 
 //Creates Bank Manager
 //Used when program start for first time or when Manager creates another user with manager privileges  
-void createManager(vector<User> *accounts)
+void createManager(vector<User*> *accounts)
 {
     
     string userName;
@@ -173,8 +172,8 @@ void createManager(vector<User> *accounts)
         
     }
 
-    string userID = generateID(accounts);
-    accounts->push_back(Manager(userID, userName));
+    string userID = generateID(*accounts);
+    accounts->push_back( new Manager(userName, userID));
 
     cout << "New manager created!" << endl << "The userID is: " << userID << endl;
     system("pause");
