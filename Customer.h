@@ -4,12 +4,16 @@ class Customer : public User
 public:
 	double savings;
 	double chequing;
+	double creditLimit;
+	double creditBalance;
 
 public:
 	Customer(string name, string ID);
+	
 
 
 	void printAccount();
+	void printPurchases();
 
 	bool customerDeposit(int choice, float depositamount);
 
