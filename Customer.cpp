@@ -13,6 +13,7 @@ class Customer: public User
 		userID = ID;
 		userType = "Cust";
 		savings = 0.0;
+		chequing = -1;
 	}
 	
 	void printAccount()

@@ -3,6 +3,7 @@
 #include <iostream>
 #include <iomanip>
 #include <string>
+#include <fstream>
 #include <time.h>
 #include <math.h>
 #include <sstream>
@@ -11,8 +12,7 @@
 using namespace std;
 
 class User
-{
-	
+{	
     //Class attributes
 public:
 	virtual ~User() { }; 
@@ -39,12 +39,11 @@ public:
             while (cin.get() != '\n') ; // empty loop     
         }
         else
-                break;
-        
+		{
+			break;	
+		}
     }
-    
     return choice;
-    
 }
 
 	//Function to ensure safe float input 
@@ -70,20 +69,4 @@ public:
 
 		return choice;
 	}
-	//---------------------------------------------------------------------
-
 };
-
-//Get User
-	//Returns a pointer to a user after searching the user vector
-	User* getUser(vector<User*> *accounts, string id)
-	{
-		for (int i = 0; i< (int)accounts->size(); ++i)
-		{
-			if ((*accounts)[i]->userID == id)
-			{
-				return (*accounts)[i];
-			}
-		}
-		return NULL;
-	}
