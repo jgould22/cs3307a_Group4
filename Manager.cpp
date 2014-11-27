@@ -99,6 +99,7 @@ void Manager::managerEdit(vector<User*> *accounts)
 					 << "1: Open a chequing account" << endl
 					 << "2: Close chequing account" << endl
 					 << "3: Close this account" << endl
+					 << "4: Change credit limit" << endl
 					 << "0: Return to main menu" << endl;
 				cout << "Option:";
 				
@@ -135,6 +136,15 @@ void Manager::managerEdit(vector<User*> *accounts)
 				{
 					closeAccount(accounts, chosenUser);
 				//	wrap(closeAccount,accounts,chosenUser,tracefile, "closeAccount");
+					choice = "0";
+				}
+				else if (choice == "4")
+				{
+					cout << "Enter new credit limit:" << endl;
+					float newLimit;
+					cin >> newLimit;
+					chosenUser->creditLimit = newLimit;
+					cout << "New credit limit is " << newLimit << endl;
 					choice = "0";
 				}
 				else
