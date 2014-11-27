@@ -199,19 +199,75 @@ void Manager::managerTotals(vector<User*> accounts)
 		cout << "There is a total of $" << totalSavings << " in saving accounts" << endl;
 		cout << "There is a total of $" << totalChequing << " in chequing accounts" << endl;
 	}
+void Manager::managerMonthEnd(vector<User*> *accounts)
+{
+	ofstream frozenStream;
+	frozenStream.open("creditFrozen.txt", fstream::out | fstream::app);
+	for (vector<User*>::iterator it = accounts->begin(); it != accounts->end(); ++it)
+	{
+		//For Each User
+		//Check if they pay all or .10
+		if ((*it)->userType != "Cust")
+			continue;//if this user isn't a customer ignore them
+		Customer *accountToCheck = ((Customer*)(*it));
+		float paymentAmount;
 
+		//
+		if (accountToCheck->payOffCredit == true)
+		{
+			paymentAmount = accountToCheck->creditBalance;
+		}
+		else
+		{
+			paymentAmount = accountToCheck->creditBalance*.10;
+		}
+		//Check if they can pay it, if not freeze and exit the loop
+		if (accountToCheck->chequing < paymentAmount)
+		{
+				accountToCheck->isFrozen = true;//may already be true
+				frozenStream << accountToCheck->userName <<" failed to pay $"<<paymentAmount<< endl;//add to list of failed payments
+		}
+		else
+		{
+			accountToCheck->chequing -= paymentAmount;//transfer money from chequing to pay off credit
+			accountToCheck->creditBalance -= paymentAmount;
+		}
+		accountToCheck->creditBalance *= 1.02;
+
+
+
+
+	}
+}
+void Manager::managerFailedPayments()
+{
+	
+	fstream frozenStream;
+	string filename = "creditFrozen.txt";
+	char purchase[65];
+	frozenStream.open(filename, fstream::in);//open frozen report
+	while (!frozenStream.eof())
+	{
+		frozenStream.getline(purchase, 64);
+		cout << purchase << endl;
+
+	}
+	cout << endl;
+}
 void Manager::managerMainMenu(vector<User*> *accounts)
 	{
 		string option;
 		cout << "\nHello " << userName << "," << endl;
     
-		while (option != "0") 
+		while (option != "0")
 		{
 			cout << "\nHow can we help you today?" << endl;
 			cout << "1. Create a new user" << endl
 				<< "2. Edit a user's account" << endl
 				<< "3. View accounts" << endl
 				<< "4. View Bank Totals" << endl
+				<< "5. End the Month" <<endl
+				<< "6. Display Failed Payments"<<endl
 				<< "0. Logout" << endl;
 			cout << "Option: ";
 			
@@ -237,6 +293,14 @@ void Manager::managerMainMenu(vector<User*> *accounts)
 			{
 				managerTotals(*accounts);
 				
+			}
+			else if (option == "5")
+			{
+				managerMonthEnd(accounts);
+			}
+			else if (option == "6")
+			{
+				managerFailedPayments();
 			}
 			else
 			{

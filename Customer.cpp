@@ -9,6 +9,8 @@ Customer::Customer(string name, string ID)
 	chequing = -1;
 	creditLimit = 1000;
 	creditBalance = 0;
+	payOffCredit = true;
+	isFrozen = false;
 }
 
 void Customer::printAccount()
@@ -70,6 +72,15 @@ bool Customer::customerDeposit(int choice, float depositamount)
 	else if (choice == 2 && chequing != -1)
 	{
 		chequing += depositamount;
+		if (chequing > creditBalance && isFrozen)
+		{
+			chequing -= creditBalance;
+			creditBalance = 0;
+			isFrozen = false;
+			cout << "Credit Unfrozen" << endl;
+
+		}
+
 	}
 	else if (choice == 2 && chequing == -1)
 	{
@@ -177,8 +188,14 @@ void Customer::customerMainMenu()
 
 		cout << "B or V?" << endl;
 		cin >> choice;
+
 		if (choice == 'V' || choice == 'v')
 		{
+			if (isFrozen == true)
+			{
+				cout << "Your credit card has been declined.";
+				continue;
+			}
 			ofstream purchaseStream;
 			string filename;
 			time_t timer(0);

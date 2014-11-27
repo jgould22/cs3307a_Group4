@@ -23,5 +23,9 @@ public:
 	//menu for viewing a User's (or all) accounts
 	void managerView(vector<User*> accounts);
 
+	void managerMonthEnd(vector<User*> *accounts);
+
+	void managerFailedPayments();
+
 
 };
