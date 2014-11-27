@@ -6,6 +6,8 @@ public:
 	double chequing;
 	double creditLimit;
 	double creditBalance;
+	bool isFrozen;
+	bool payOffCredit;
 
 public:
 	Customer(string name, string ID);

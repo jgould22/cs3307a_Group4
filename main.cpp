@@ -42,6 +42,7 @@ int main(int argc, char **argv)
 					}
 					else if (currentUser->userType == "Man")
 					{
+						
 						((Manager*)(currentUser))->managerMainMenu(&vectorUser);
 					}
 					else
