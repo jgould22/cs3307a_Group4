@@ -25,7 +25,9 @@ public:
 
 	//runs the menu for transfer options
 	bool customerTransfer(int type, float amount);
-
+	
+	//option to manually pay off credit card balance
+	void manualCreditPayment();
 
 	//main menu displayed only to customers ('c')
 	void customerMainMenu();
