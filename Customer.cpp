@@ -174,6 +174,43 @@ bool Customer::customerTransfer(int type, float amount)
 		return false;
 }
 
+void Customer::manualCreditPayment()
+{
+	cout << "Enter amount you wish to pay off: " << endl;
+	float amount;
+	cin >> amount;
+	if (amount <= chequing)
+	{
+		if (amount = creditBalance)
+		{
+			if (isFrozen = true)
+			{
+				cout << "Your card is now paid off" << endl;
+				chequing -= amount;
+				isFrozen = false;
+				cout << "Your account is now unfrozen" << endl;
+			}
+			else 
+			{
+				cout << "Your card is now paid off" << endl;
+				chequing -= amount;
+			}
+		}
+		else if (amount < creditBalance)
+		{
+			chequing -= amount;
+		}
+		else if (amount > creditBalance)
+		{
+			cout << "You entered an amount that is higher than your credit balance" << endl;
+		}
+
+	}
+	else 
+	{
+		cout << "You do not have sufficient funds in chequing to pay off this much of your credit card balance." << endl;
+	}
+}
 
 //main menu displayed only to customers ('c')
 void Customer::customerMainMenu()
@@ -229,6 +266,7 @@ void Customer::customerMainMenu()
 				<< "3: Transfer account funds" << endl
 				<< "4: Display current balance(s)" << endl
 				<< "5. Print Purchases" <<endl
+				<< "6. Make Manual Credit Payment" <<endl
 				<< "0: Logout" << endl;
 			cout << "Option: ";
 
@@ -285,6 +323,8 @@ void Customer::customerMainMenu()
 				printAccount();
 			else if (optionNum == "5")
 				printPurchases();
+			else if (optionNum == "6")
+				manualCreditPayment();
 			//wrap(printAccount,*currentUser,tracefile, "printAccount");
 			else
 			{
