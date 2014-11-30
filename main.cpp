@@ -66,13 +66,14 @@ void saveToDataBase(vector<User*> accounts)
 {
 	ofstream myFile;
 	myFile.open("userDB.txt");
-
+	Customer *toWrite;
 	for (vector<User*>::iterator it = accounts.begin(); it != accounts.end(); ++it)
 	{
 		if ((*it)->userType == "Cust")
 		{
-			myFile << (*it)->userName << "\n" << (*it)->userID << "\n" << (*it)->userType << "\n" << ((Customer*)(*it))->savings << "\n" << ((Customer*)(*it))->chequing << "\n"
-				<< ((Customer*)(*it))->creditBalance << "\n" << ((Customer*)(*it))->creditLimit << "\n";;
+			toWrite =(Customer*)(*it);
+			myFile << toWrite->userName << "\n" << toWrite->userID << "\n" << toWrite->userType << "\n" << toWrite->getSavings() << "\n" << toWrite->getChequing() << "\n"
+				<< toWrite->getCreditBalance() << "\n" << toWrite->getCreditLimit() << "\n" << toWrite->isFrozen()<<"\n";
 		}
 		else if ((*it)->userType == "Man")
 		{
@@ -102,6 +103,7 @@ vector<User*> openDataBase()
 		double chequing;
 		double creditBalance;
 		double creditLimit;
+		bool frozen;
 
 		string line;
 
@@ -118,13 +120,11 @@ vector<User*> openDataBase()
 					myfile >> savings
 						>> chequing
 						>> creditBalance
-						>> creditLimit;
+						>> creditLimit
+						>>frozen;
 
-					Customer *user = new Customer(name, userID);
-					user->savings = savings;
-					user->chequing = chequing;
-					user->creditBalance = creditBalance;
-					user->creditLimit = creditLimit;
+					Customer *user = new Customer(name, userID,savings,chequing,creditBalance,creditLimit,frozen);
+				
 					vectorUser.push_back(user);
 
 					getline(myfile, line);

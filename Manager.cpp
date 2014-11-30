@@ -107,25 +107,25 @@ void Manager::managerEdit(vector<User*> *accounts)
 
 				if (choice == "0")
 					cout << "Signing out of " << chosenUser->userName << "'s account" << endl;
-				else if (choice == "1" && chosenUser->chequing == -1)
+				else if (choice == "1" && chosenUser->getChequing() == -1)
 				{
 					
 					chosenUser->chequing = 0;
 					cout << chosenUser->userName << "'s chequing account has been created!" << endl;
 					
 				}
-				else if (choice == "1" && chosenUser->chequing != -1)
+				else if (choice == "1" && chosenUser->getChequing() != -1)
 					cout << chosenUser->userName << " already has a chequing account..." << endl;
-				else if (choice == "2" && chosenUser->chequing == 0)
+				else if (choice == "2" && chosenUser->getChequing() == 0)
 				{
 					
 					chosenUser->chequing = -1;
 					cout << "Closing " << chosenUser->userName << "'s chequing account" << endl;
 					
 				}
-				else if (choice == "2" && chosenUser->chequing != 0)
+				else if (choice == "2" && chosenUser->getChequing() != 0)
 				{
-					if (chosenUser->chequing > 0)
+					if (chosenUser->getChequing() > 0)
 						cout << "Unable to close chequing, money still deposited" << endl;
 					else
 						cout << "That account is not open" << endl;
@@ -143,7 +143,7 @@ void Manager::managerEdit(vector<User*> *accounts)
 					cout << "Enter new credit limit:" << endl;
 					float newLimit;
 					cin >> newLimit;
-					chosenUser->creditLimit = newLimit;
+					chosenUser->setNewLimit(newLimit);
 					cout << "New credit limit is " << newLimit << endl;
 					choice = "0";
 				}
@@ -162,11 +162,11 @@ void Manager::closeAccount(vector<User*> *accounts, User* thisUser)
 	{
 		//This will crash if you try to close a manager or maintenance...
 		Customer* toClose = (Customer*)thisUser;
-		if (toClose->savings != 0)
+		if (toClose->getSavings()!= 0)
 			cout << toClose->userName << " still has money in savings account." << endl;
-		else if (toClose->savings == 0)
+		else if (toClose->getSavings() == 0)
 		{
-			if (toClose->chequing > 0)
+			if (toClose->getChequing() > 0)
 			{
 				cout << toClose->userName << " still has money in chequing account." << endl;
 			}
@@ -198,10 +198,10 @@ void Manager::managerTotals(vector<User*> accounts)
 			if ((*it)->userType == "Cust")
 			{
 				customerCount++;
-				totalSavings += ((Customer*)(*it))->savings;
+				totalSavings += ((Customer*)(*it))->getSavings();
 				
-				if (((Customer*)(*it))->chequing != -1)
-					totalChequing += ((Customer*)(*it))->chequing;
+				if (((Customer*)(*it))->getChequing() != -1)
+					totalChequing += ((Customer*)(*it))->getChequing();
 			}
 		}
 		
@@ -220,34 +220,11 @@ void Manager::managerMonthEnd(vector<User*> *accounts)
 		if ((*it)->userType != "Cust")
 			continue;//if this user isn't a customer ignore them
 		Customer *accountToCheck = ((Customer*)(*it));
-		float paymentAmount;
-
-		//
-		if (accountToCheck->payOffCredit == true)
-		{
-			paymentAmount = accountToCheck->creditBalance;
-		}
-		else
-		{
-			paymentAmount = accountToCheck->creditBalance*.10;
-		}
-		//Check if they can pay it, if not freeze and exit the loop
-		if (accountToCheck->chequing < paymentAmount)
-		{
-				accountToCheck->isFrozen = true;//may already be true
-				frozenStream << accountToCheck->userName <<" failed to pay $"<<paymentAmount<< endl;//add to list of failed payments
-		}
-		else
-		{
-			accountToCheck->chequing -= paymentAmount;//transfer money from chequing to pay off credit
-			accountToCheck->creditBalance -= paymentAmount;
-		}
-		accountToCheck->creditBalance *= 1.02;
-
-
-
-
+		
+		if (!accountToCheck->monthEnd())
+			frozenStream << accountToCheck->userName << " failed to pay, and owes $" << accountToCheck->getCreditBalance() << endl;//add to list of failed payments
 	}
+	
 }
 void Manager::managerFailedPayments()
 {

@@ -1,17 +1,18 @@
 #include "User.h"
 class Customer : public User
 {
-public:
+	friend class Manager;
+private:
 	double savings;
 	double chequing;
 	double creditLimit;
 	double creditBalance;
-	bool isFrozen;
-	bool payOffCredit;
+	bool frozen;
+	bool paymax;
 
 public:
 	Customer(string name, string ID);
-	
+	Customer(string name, string userID,double savings,double chequing,double creditBalance,double creditLimit, bool frozen);
 
 
 	void printAccount();
@@ -31,5 +32,15 @@ public:
 
 	//main menu displayed only to customers ('c')
 	void customerMainMenu();
+
+	double getSavings();
+	double getChequing();
+	double getCreditLimit();
+	void setNewLimit(double);
+	double getCreditBalance();
+	bool   isFrozen();
+	bool payOffCredit();
+	bool monthEnd();
+	
 
 };

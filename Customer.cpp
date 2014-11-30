@@ -9,10 +9,22 @@ Customer::Customer(string name, string ID)
 	chequing = -1;
 	creditLimit = 1000;
 	creditBalance = 0;
-	payOffCredit = true;
-	isFrozen = false;
+	paymax = true;
+	frozen = false;
 }
 
+Customer::Customer(string name, string ID, double sav, double che, double cb, double cl, bool f)
+{
+	userName = name;
+	userID = ID;
+	userType = "Cust";
+	savings = sav;
+	chequing = che;
+	creditLimit = cl;
+	creditBalance = cb;
+	paymax = true;
+	frozen = f;
+}
 void Customer::printAccount()
 {
 	ostringstream oss;
@@ -72,11 +84,11 @@ bool Customer::customerDeposit(int choice, float depositamount)
 	else if (choice == 2 && chequing != -1)
 	{
 		chequing += depositamount;
-		if (chequing > creditBalance && isFrozen)
+		if (chequing > creditBalance && frozen)
 		{
 			chequing -= creditBalance;
 			creditBalance = 0;
-			isFrozen = false;
+			frozen = false;
 			cout << "Credit Unfrozen" << endl;
 
 		}
@@ -189,10 +201,10 @@ void Customer::manualCreditPayment()
 		{
 			chequing -= amount;
 			creditBalance -= amount;
-			if (isFrozen = true)
+			if (frozen = true)
 			{
 				
-				isFrozen = false;
+				frozen = false;
 				cout << "Your account is now unfrozen" << endl;
 			}
 			cout << "Your card is now paid off" << endl;
@@ -222,7 +234,7 @@ void Customer::customerMainMenu()
 
 		if (choice == 'V' || choice == 'v')
 		{
-			if (isFrozen == true)
+			if (frozen == true)
 			{
 				cout << "Your credit card has been declined.";
 				continue;
@@ -330,3 +342,37 @@ void Customer::customerMainMenu()
 
 }
 
+
+double Customer::getSavings(){ return savings;}
+double Customer::getChequing(){ return chequing; }
+double Customer::getCreditLimit(){ return creditLimit; }
+void Customer::setNewLimit(double newlimit){ creditLimit = newlimit; }
+double Customer::getCreditBalance(){ return creditBalance; }
+bool   Customer::isFrozen(){return frozen;}
+bool Customer::payOffCredit(){ return paymax; }
+bool Customer::monthEnd()
+{
+	float paymentAmount;
+		if (paymax)
+		{
+			paymentAmount = creditBalance;
+		}
+		else
+		{
+			paymentAmount = creditBalance*.10;
+		}
+		//Check if they can pay it, if not freeze and exit the loop
+		if (chequing < paymentAmount)
+		{
+			frozen = true;//may already be true
+		}
+		else
+		{
+			chequing -= paymentAmount;//transfer money from chequing to pay off credit
+			creditBalance -= paymentAmount;
+		}
+		creditBalance *= 1.02;
+		if (frozen)
+			return false;
+		else return true;
+}
