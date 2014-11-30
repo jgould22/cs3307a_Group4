@@ -181,28 +181,22 @@ void Customer::manualCreditPayment()
 	cin >> amount;
 	if (amount <= chequing)
 	{
-		if (amount = creditBalance)
+		if (amount > creditBalance)
 		{
+			cout << "You entered an amount that is higher than your credit balance" << endl;
+		}
+		else
+		{
+			chequing -= amount;
+			creditBalance -= amount;
 			if (isFrozen = true)
 			{
-				cout << "Your card is now paid off" << endl;
-				chequing -= amount;
+				
 				isFrozen = false;
 				cout << "Your account is now unfrozen" << endl;
 			}
-			else 
-			{
-				cout << "Your card is now paid off" << endl;
-				chequing -= amount;
-			}
-		}
-		else if (amount < creditBalance)
-		{
-			chequing -= amount;
-		}
-		else if (amount > creditBalance)
-		{
-			cout << "You entered an amount that is higher than your credit balance" << endl;
+			cout << "Your card is now paid off" << endl;
+	
 		}
 
 	}
