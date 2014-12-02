@@ -60,13 +60,22 @@ void Customer::printPurchases()
 	char purchase[65];
 	filename = userName + ".txt";
 	purchaseStream.open(filename, fstream::in);//open purchase report
+	float sum = 0;
+	float line;
+	cout << endl;
 	while (!purchaseStream.eof())
 	{
 		purchaseStream.getline(purchase, 64);
-		cout << purchase << endl;
+		if (purchase[0]=='\0')
+			break;
+		line = stoi(purchase);
+		sum += line;
+		cout <<"Item bought for:"<< purchase << endl;
 
 	}
-	cout << endl;
+	cout <<"Total is $"<<sum<<  endl;
+	if (sum > (.75*chequing))
+		cout << "This is above 75% of your chequing balance!" << endl;
 }
 bool Customer::customerDeposit(int choice, float depositamount)
 {
@@ -201,13 +210,7 @@ void Customer::manualCreditPayment()
 		{
 			chequing -= amount;
 			creditBalance -= amount;
-			if (frozen = true)
-			{
-				
-				frozen = false;
-				cout << "Your account is now unfrozen" << endl;
-			}
-			cout << "Your card is now paid off" << endl;
+			cout << "You paid off $" <<amount<< endl;
 	
 		}
 
@@ -229,14 +232,14 @@ void Customer::customerMainMenu()
 	{
 		printAccount();
 
-		cout << "B or V?" << endl;
+		cout << "Bank or Vendor?" << endl;
 		cin >> choice;
 
 		if (choice == 'V' || choice == 'v')
 		{
 			if (frozen == true)
 			{
-				cout << "Your credit card has been declined.";
+				cout << "Your credit card has been declined."<<endl;
 				continue;
 			}
 			ofstream purchaseStream;
@@ -253,7 +256,7 @@ void Customer::customerMainMenu()
 			cin >> choice;
 			if (choice == 'Y' || choice == 'y')
 			{
-				purchaseStream << "ITEM BOUGHT FOR: $" << price <<endl;//add to purchase
+				purchaseStream << price <<endl;//add to purchase
 				creditBalance += price;//add to bank file
 			}
 			else
