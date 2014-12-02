@@ -1,5 +1,5 @@
 #include "Customer.h"
-
+using namespace std;
 Customer::Customer(string name, string ID)
 {
 	userName = name;
@@ -60,22 +60,30 @@ void Customer::printPurchases()
 	char purchase[65];
 	filename = userName + ".txt";
 	purchaseStream.open(filename, fstream::in);//open purchase report
+	string tracefile("ExecutionTrace.txt");
+	ofstream trace;
+	trace.open(tracefile, fstream::out | fstream::app);
+	trace << endl << "CUSTOMER:"<<userName<<" PRINTING" << endl;
 	float sum = 0;
 	float line;
 	cout << endl;
 	while (!purchaseStream.eof())
 	{
+		trace << "Get next line of purchase list." << endl;
 		purchaseStream.getline(purchase, 64);
 		if (purchase[0]=='\0')
 			break;
+		trace << "Purchase line isn't empty" << endl;
 		line = stoi(purchase);
 		sum += line;
 		cout <<"Item bought for:"<< purchase << endl;
 
 	}
 	cout <<"Total is $"<<sum<<  endl;
+	trace << "Total printed for customer." << endl;
 	if (sum > (.75*chequing))
 		cout << "This is above 75% of your chequing balance!" << endl;
+	trace <<userName<<" warned about high balance" << endl;
 }
 bool Customer::customerDeposit(int choice, float depositamount)
 {
@@ -228,6 +236,10 @@ void Customer::customerMainMenu()
 
 	char choice;
 	string optionNum;
+	string tracefile("ExecutionTrace.txt");
+	ofstream trace;
+	trace.open(tracefile, fstream::out | fstream::app);
+	
 	while (optionNum != "0")
 	{
 		printAccount();
@@ -237,8 +249,11 @@ void Customer::customerMainMenu()
 
 		if (choice == 'V' || choice == 'v')
 		{
+			trace << endl << "NEW TRANSACTION" << endl;
+			trace << "Checking if card is frozen." << endl;
 			if (frozen == true)
 			{
+				trace << "Card is frozen, leaving vendor." << endl;
 				cout << "Your credit card has been declined."<<endl;
 				continue;
 			}
@@ -249,22 +264,29 @@ void Customer::customerMainMenu()
 			time(&timer);
 			float price = rand() % 100;
 			filename = userName + ".txt";
+			trace << "Opening purchase report" << endl;
 			purchaseStream.open(filename, fstream::out | fstream::app);//open purchase report
 			cout << "Do you want to pay: $" << price << endl; // Randomizing a price between 0 and 100
 
-			char choice;//util method here for y/n thing?
+			char choice;
 			cin >> choice;
 			if (choice == 'Y' || choice == 'y')
 			{
+				trace << "User going through with purchase." << endl;
 				purchaseStream << price <<endl;//add to purchase
+				trace << "Item added to purchase report." << endl;
 				creditBalance += price;//add to bank file
+				trace << "Credit balance updated." << endl;
 			}
 			else
 			{
+				trace << "User aborted purchase." << endl;
 				cout << "Transaction aborted" << endl;
 			}
 			cout << "Goodbye " << userName;
 			purchaseStream.close();
+			trace << "Purchase report closing." << endl;
+			trace.close();
 
 		}
 		else
@@ -356,6 +378,10 @@ bool Customer::payOffCredit(){ return paymax; }
 bool Customer::monthEnd()
 {
 	float paymentAmount;
+	string tracefile("ExecutionTrace.txt");
+	ofstream trace;
+	trace.open(tracefile, fstream::out | fstream::app);
+	trace << "\nEnd of the Month for " << userName<<endl;
 		if (paymax)
 		{
 			paymentAmount = creditBalance;
@@ -365,16 +391,21 @@ bool Customer::monthEnd()
 			paymentAmount = creditBalance*.10;
 		}
 		//Check if they can pay it, if not freeze and exit the loop
+		trace << "Checking if they can pay." << endl;
 		if (chequing < paymentAmount)
 		{
 			frozen = true;//may already be true
+			trace << "Customer cannot pay, account frozen." << endl;
 		}
 		else
 		{
+			trace << "Customer can pay, money transferred." << endl;
 			chequing -= paymentAmount;//transfer money from chequing to pay off credit
 			creditBalance -= paymentAmount;
+			
 		}
-		creditBalance *= 1.02;
+		creditBalance = ((int)(creditBalance*102))/100.00;//to keep it in real amounts
+		trace << "Credit balance updated." << endl;
 		if (frozen)
 			return false;
 		else return true;
