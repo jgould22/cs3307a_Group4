@@ -232,7 +232,7 @@ void Manager::managerFailedPayments()
 	fstream frozenStream;
 	string filename = "creditFrozen.txt";
 	char purchase[65];
-	frozenStream.open(filename, fstream::in);//open frozen report
+	frozenStream.open(filename.c_str(), fstream::in);//open frozen report
 	while (!frozenStream.eof())
 	{
 		frozenStream.getline(purchase, 64);

@@ -59,10 +59,10 @@ void Customer::printPurchases()
 	string filename;
 	char purchase[65];
 	filename = userName + ".txt";
-	purchaseStream.open(filename, fstream::in);//open purchase report
+	purchaseStream.open(filename.c_str(), fstream::in);//open purchase report
 	string tracefile("ExecutionTrace.txt");
 	ofstream trace;
-	trace.open(tracefile, fstream::out | fstream::app);
+	trace.open(tracefile.c_str(), fstream::out | fstream::app);
 	trace << endl << "CUSTOMER:"<<userName<<" PRINTING" << endl;
 	float sum = 0;
 	float line;
@@ -74,7 +74,7 @@ void Customer::printPurchases()
 		if (purchase[0]=='\0')
 			break;
 		trace << "Purchase line isn't empty" << endl;
-		line = stoi(purchase);
+		line = atoi(purchase);
 		sum += line;
 		cout <<"Item bought for:"<< purchase << endl;
 
@@ -238,13 +238,13 @@ void Customer::customerMainMenu()
 	string optionNum;
 	string tracefile("ExecutionTrace.txt");
 	ofstream trace;
-	trace.open(tracefile, fstream::out | fstream::app);
+	trace.open(tracefile.c_str(), fstream::out | fstream::app);
 	
 	while (optionNum != "0")
 	{
 		printAccount();
 
-		cout << "Bank or Vendor?" << endl;
+		cout << "(B)ank or (V)endor?" << endl;
 		cin >> choice;
 
 		if (choice == 'V' || choice == 'v')
@@ -265,7 +265,7 @@ void Customer::customerMainMenu()
 			float price = rand() % 100;
 			filename = userName + ".txt";
 			trace << "Opening purchase report" << endl;
-			purchaseStream.open(filename, fstream::out | fstream::app);//open purchase report
+			purchaseStream.open(filename.c_str(), fstream::out | fstream::app);//open purchase report
 			cout << "Do you want to pay: $" << price << endl; // Randomizing a price between 0 and 100
 
 			char choice;
@@ -380,7 +380,7 @@ bool Customer::monthEnd()
 	float paymentAmount;
 	string tracefile("ExecutionTrace.txt");
 	ofstream trace;
-	trace.open(tracefile, fstream::out | fstream::app);
+	trace.open(tracefile.c_str(), fstream::out | fstream::app);
 	trace << "\nEnd of the Month for " << userName<<endl;
 		if (paymax)
 		{
